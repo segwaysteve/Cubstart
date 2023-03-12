@@ -28,20 +28,48 @@ struct MazeLocationView: View {
     var body: some View {
         VStack {
             // TODO: Display message that user has entered the maze OR their previous move and current path.
+            if (previous_action == "Enter") {
+                Text("Welcome to your demise.")
+            }
+            else {
+                Text("You chose to go " + previous_action).padding()
+                Text("You have currently gone " + currentPathString)
+            }
             
             Spacer()
             
             // TODO: Text that makes player nervious about picking their next move.
+            Text("Be careful where you choose to go next.").padding()
             
             // TODO: Explore Up Button + actions
+            Button("Up") {
+                backtrack = true
+                currentPath.append("Up")
+                navPath.append("Up")
+            }.padding()
             
             HStack {
                 // TODO: Explore Left Button
+                Button("Left") {
+                    backtrack = true
+                    currentPath.append("Left")
+                    navPath.append("Left")
+                }.padding()
                 
                 // TODO: Explore Right Button
+                Button("Right") {
+                    backtrack = true
+                    currentPath.append("Right")
+                    navPath.append("Right")
+                }.padding()
             }
             
             // TODO: Explore Down Button
+            Button("Down") {
+                backtrack = true
+                currentPath.append("Down")
+                navPath.append("Down")
+            }.padding()
             
             Spacer()
             Spacer()
@@ -51,6 +79,10 @@ struct MazeLocationView: View {
         }
         .onAppear {
             // TODO: Implement Backtracking
+            if backtrack {
+                _ = currentPath.popLast()
+                backtrack = false
+            }
             
             // Refresh the currentPathString variable to reflect new current path whether visiting or backtracking.
             currentPathString = currentPath.joined(separator: "->")

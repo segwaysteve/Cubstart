@@ -21,9 +21,11 @@ struct MazeExitView: View {
         Button("Play again") {
             // Setup a new game.
             // TODO: Reset the current path and current path string to empty.
-            
+            currentPath = []
+            currentPathString = ""
             // TODO: Generate a new solution path and create the corresponding string for it.
-            
+            solutionPath = generate_turns(size: 3)
+            solutionPathString = solutionPath.joined(separator: "->")
             // Remove all views on navigation stack. Return to root view.
             navPath = .init()
         }

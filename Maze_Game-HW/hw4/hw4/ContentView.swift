@@ -18,7 +18,7 @@ struct ContentView: View {
     
     // TODO: Uncomment solutionPath and initialize it to the correct value.
     // Array of strings representing the path to the maze exit.
-    // @State var solutionPath: [String]
+    @State var solutionPath: [String] = generate_turns(size: 3)
     
     // Array of strings representing the current path the user has taken.
     @State var currentPath: [String] = []
@@ -32,19 +32,27 @@ struct ContentView: View {
         NavigationStack(path: $navPath) {
             VStack {
                 // TODO: Menacing Maze Text Warning
-                
+                Text("Do you dare brave the perils ahead?").padding()
                 // TODO: Begin game Button
+                Button("Enter") {
+                    navPath.append("Enter")
+                }
             }
             .navigationTitle("Maze Game")
             // TODO: Replace DummyDataType with correct data type.
-            .navigationDestination(for: DummyDataType.self) { action in
+            .navigationDestination(for: String.self) { action in
                 // TODO: Replace EmptyView() with code to display correct view based on action pushed onto the navigation stack.
-                EmptyView()
+                if (currentPath != solutionPath) {
+                    MazeLocationView(previous_action: action, navPath: $navPath, currentPath: $currentPath, solutionPath: $solutionPath, solutionPathString: $solutionPathString, currentPathString: $currentPathString)
+                }
+                else {
+                    MazeExitView(navPath: $navPath, currentPath: $currentPath, solutionPath: $solutionPath, solutionPathString: $solutionPathString, currentPathString: $currentPathString)
+                }
             }
         }
         .onAppear {
             // TODO: Uncomment after initializing solutionPath
-            // solutionPathString = solutionPath.joined(separator: "->")
+            solutionPathString = solutionPath.joined(separator: "->")
         }
     }
 }
