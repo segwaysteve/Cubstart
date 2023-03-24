@@ -15,11 +15,17 @@ import Foundation
  */
 func fetchDog() async -> Dog? {
     // TODO: Part 2b - Create url object.
-    
+    guard let url = URL(string: "https://dog.ceo/api/breeds/image/random") else {
+            return nil
+        }
     // Wrap api call inside a do/catch block in case an error is thrown.
     do {
         // TODO: Part 2b - Send request and get data from api.
+        let (data, _) = try await URLSession.shared.data(from: url)
         // TODO: Part 2b - Decode JSON of the data from api into a Dog. Return the decoded response.
+        if let decodedResponse = try? JSONDecoder().decode(Dog.self, from: data) {
+                    return decodedResponse
+                }
     } catch {
         // Note: You may be getting a yellow warning that this block is unreachable. Don't worry about it, it should disappear after you finish Part 2b.
         return nil

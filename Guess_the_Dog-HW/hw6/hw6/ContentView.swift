@@ -29,24 +29,25 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             // TODO: Part 1a - Linear Gradient Background.
-            
+            LinearGradient(gradient: Gradient(colors: [lightBlue, lavender]), startPoint: .top, endPoint: .bottom).ignoresSafeArea()
             // VStack in foreground
             VStack {
                 // TODO: Part 1b - Title.
-                
+                Text("Guess that Dog!").font(.largeTitle).padding()
                 HStack {
                     // TODO: Part 1b - Streak Text.
-                    
+                    Text("Streak: " + String(streak))
                     Spacer()
                     
                     // TODO: Part 1b - Best Streak Text.
+                    Text("Best Streak: " + String(best_streak))
                 }
                 .padding(.horizontal, 40)
                 .padding(.bottom, 60)
                 
                 // TODO: PART 3a - Replace the hardcoded string URL with the imageURL.
                 // Ansyncronously loads an image from the URL.
-                AsyncImage(url: URL(string: "https://images.dog.ceo/breeds/papillon/n02086910_2909.jpg")) { phase in
+                AsyncImage(url: URL(string: imageURL)) { phase in
                     if let image = phase.image {
                         image
                             .resizable()
@@ -60,6 +61,7 @@ struct ContentView: View {
                 .frame(width: 256, height: 256)
                 
                 // TODO: PART 1b - Display the generated hint.
+                Text(generateHint(input: dogBreed)).scaledToFit().padding()
                 
                 TextField("", text: $user_guess)
                     .disableAutocorrection(true)
@@ -68,18 +70,53 @@ struct ContentView: View {
                     .padding(.horizontal, 50)
                     .onSubmit {
                         // TODO: Part 3b - Guess submission logic.
-                        if (true) {
-                            
+                        if (user_guess.lowercased() == dogBreed) {
+                            streak += 1
+                            if (streak > best_streak) {
+                                best_streak = streak
+                            }
                             Task {
                                 // Hint: You should be fetching a new doggy here!
+                                let dog = await fetchDoggy()
+                                imageURL = dog.message
+                                dogBreed = getDogName(imageURL: imageURL)
                             }
+                            user_guess = ""
                         } else {
-                            
+                            incorrectGuess = true
                         }
                         
                     }
                 
                 // TODO: Part 1b - Submit Guess Button.
+                Button("Submit") {
+                    if (user_guess.lowercased() == dogBreed) {
+                        streak += 1
+                        if (streak > best_streak) {
+                            best_streak = streak
+                        }
+                        Task {
+                            let dog = await fetchDoggy()
+                            imageURL = dog.message
+                            dogBreed = getDogName(imageURL: imageURL)
+                        }
+                        user_guess = ""
+                    }
+                    else {
+                        incorrectGuess = true
+                    }
+                }.alert("Wrong guess!", isPresented: $incorrectGuess) {
+                    Button("Play Again", role: .cancel) {
+                        Task {
+                            streak = 0
+                            let dog = await fetchDoggy()
+                            imageURL = dog.message
+                            dogBreed = getDogName(imageURL: imageURL)
+                        }
+                    }
+                } message: {
+                    Text("The correct answer was " + dogBreed + "\nYour streak was : " + String(streak))
+                }
                 // TODO: Part 3b - Guess submission logic in Button. Hint: Should be exact same as TextField.onSubmit{ }.
                 // TODO: Part 3c - Incorrect guess alert (attached to submit guess button).
                 
@@ -91,6 +128,9 @@ struct ContentView: View {
             }
             .task {
                 // TODO: Part 3a - Fetch a doggy upon loading the app.
+                let dog = await fetchDoggy()
+                imageURL = dog.message
+                dogBreed = getDogName(imageURL: imageURL)
             }
         }
     }
