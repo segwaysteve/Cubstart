@@ -10,10 +10,42 @@ import Firebase
 import FirebaseCore
 
 struct ContentView: View {
-    init() {
-           FirebaseApp.configure()
-       }
+    @State var email = ""
+    @State var password = ""
+    @State var loggedIn = false
     
+    init() {
+        FirebaseApp.configure()
+    }
+    
+    func login(email: String, password: String) {
+        Auth.auth().signIn(withEmail: email, password: password) {authResult, error in
+            if let err = error {
+                print(err.localizedDescription)
+                return
+            }
+            
+            self.loggedIn = true
+        }
+    }
+    
+    var body: some View {
+        VStack {
+            if (loggedIn) {
+                SomeView()
+            }
+            else {
+                TextField("Email", text: $email).padding()
+                SecureField("Password", text: $password).padding()
+                Button("Sign In") {
+                    login(email: email, password: password)
+                }
+            }
+        }
+    }
+}
+
+struct SomeView: View {
     var body: some View {
         TabView {
             AddView().tabItem {
