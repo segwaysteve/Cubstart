@@ -22,10 +22,21 @@ struct q3: View {
                 .background(Color.brown)
                 .clipShape(Circle())
                 // TODO: Add 3D rotation and offset modifiers.
+                .rotation3DEffect(Angle(degrees: rotation), axis: (x: 1, y: 0, z: 0))
+                .offset(x: 0, y: offset_y)
                 .onTapGesture {
                     face = ""
                     
                     // TODO: Implement two explicit animations below.
+                    withAnimation(.easeOut(duration: 1.0)) {
+                        rotation += 1080.0
+                        offset_y = -300.0
+                    }
+                    
+                    withAnimation(.easeIn(duration: 1.0).delay(1.0)) {
+                        rotation += 1080.0
+                        offset_y = 0
+                    }
                     
                     // Do not modify code below.
                     Task {
